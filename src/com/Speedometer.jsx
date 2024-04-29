@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from "axios"
+import io from "socket.io-client";
+import HttpClient from '../middleware/HttpClient';
 
 const Speedometer = ({ value }) => {
   // State to hold the current count for animation
@@ -72,7 +75,25 @@ const Speedometer = ({ value }) => {
 };
 
 const App = () => {
-  const userCount = 5500; // Example user count
+
+
+  
+  const [userCount,setUserCount]=useState(0);
+  const api = HttpClient();
+
+  useEffect(()=>{
+    api.get("api/user/getUserCount")
+    // axios
+    //   .get("http://localhost:3002/api/user/getUserCount")
+      .then((response) => {
+        console.log("user count is: ",response.data.count);
+        setUserCount(response.data.count);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+  },[]) 
 
   return (
     <div className="App  mx-10 ml-40">

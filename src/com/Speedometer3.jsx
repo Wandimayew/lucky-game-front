@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import io from "socket.io-client";
+import HttpClient from '../middleware/HttpClient';
 
 const Speedometer3 = ({ value }) => {
   // State to hold the current count for animation
@@ -72,13 +75,43 @@ const Speedometer3 = ({ value }) => {
 };
 
 const App = () => {
-  const userCount = 5500; // Example user count
+  const [winnersCount,setWinnersCount]=useState(0);
+  const api = HttpClient();
+
+  const socket = io("http://localhost:3002");
+
+  socket.on("winnerAdded",(data)=>{
+    console.log("message: ",data);
+    api.get("api/winner/getWinnerCount")
+    // axios
+    //   .get("http://localhost:3002/api/winner/getWinnerCount")
+      .then((response) => {
+        console.log("Winners count is: ",response.data.count);
+        setWinnersCount(response.data.count);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  })
+  useEffect(()=>{
+    api.get("api/winner/getWinnerCount")
+    // axios
+    //   .get("http://localhost:3002/api/winner/getWinnerCount")
+      .then((response) => {
+        console.log("Winners count is: ",response.data.count);
+        setWinnersCount(response.data.count);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+  },[]) 
 
   return (
     <div className="App p-4">
-      <h1 className="text-2xl font-bold p-5 pl-10 text-start">Winers</h1>
+      <h1 className="text-2xl font-bold p-5 pl-10 text-start">Winners</h1>
       
-      <Speedometer3 value={userCount} />
+      <Speedometer3 value={winnersCount} />
     </div>
   );
 };

@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import axios  from 'axios';
+import io from "socket.io-client";
+import HttpClient from '../middleware/HttpClient';
 
 const Speedometer1 = ({ value }) => {
   // State to hold the current count for animation
@@ -72,13 +75,43 @@ const Speedometer1 = ({ value }) => {
 };
 
 const App = () => {
-  const userCount = 4; // Start from 0
+  const [categoryCount,setCategoryCount]=useState(0);
+  const api = HttpClient();
+
+  const socket = io("http://localhost:3002");
+
+  socket.on("categoryAdded",(data)=>{
+    console.log("message: ",data);
+    api.get("api/category/getCategoryCount")
+    // axios
+    //   .get("http://localhost:3002/api/category/getCategoryCount")
+      .then((response) => {
+        console.log("Category count is: ",response.data.count);
+        setCategoryCount(response.data.count);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  })
+  useEffect(()=>{
+    api.get("api/category/getCategoryCount")
+    // axios
+    //   .get("http://localhost:3002/api/category/getCategoryCount")
+      .then((response) => {
+        console.log("Category count is: ",response.data.count);
+        setCategoryCount(response.data.count);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+
+  },[]) 
 
   return (
     <div className="App p-4 mr-10">
       <h1 className="text-2xl font-bold p-5 pl-10 text-start">Category</h1>
       
-      <Speedometer1 value={userCount} />
+      <Speedometer1 value={categoryCount} />
     </div>
   );
 };

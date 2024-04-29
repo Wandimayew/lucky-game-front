@@ -4,13 +4,24 @@ import { FaBalanceScale, FaBlog, FaGamepad } from "react-icons/fa";
 import { FaPersonRifle } from "react-icons/fa6";
 import { MdAccountBalance } from "react-icons/md";
 import { FaUserCircle } from "react-icons/fa";
+import io from "socket.io-client";
+import { useState } from "react";
+const socket = io("http://localhost:3002");
 
 const Sidebar = ({ sidebarToggle }) => {
+  const [isAdmin,setAdmin]=useState(false);
+
+  socket.on("ADMIN", (message) => {
+    setAdmin(true);
+    console.log("YES IT IS ADMIN", message);
+  });
+
   return (
     <div className="">
       <div className={`${sidebarToggle ? "hidden" : "block"} w-64 bg-gray-800 fixed h-full px-4 py-2`}>
         <div className="my-2 mb-4">
-          <h1 className="text-2x text-white font-bold">My Game</h1>
+          <h1 className="text-2x text-white font-bold hover:cursor-pointer"
+          >HOME</h1>
         </div>
         <hr />
         <ul className="mt-3 text-white font-bold">
@@ -38,6 +49,15 @@ const Sidebar = ({ sidebarToggle }) => {
               Bloge
             </NavLink>
           </li>
+          {
+            isAdmin && 
+            <li className="mb-2 rounded hover:shadow hover:bg-blue-500 py-2">
+            <NavLink to="/dashboard" className="flex items-center">
+              <FaBlog className="inline-block w-6 h-6 mr-2 -mt-2" />
+              ADMIN DASHBOARD
+            </NavLink>
+          </li>
+          }
         </ul>
       </div>
     </div>

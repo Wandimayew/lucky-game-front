@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useEffect} from 'react';
 import { FaSun } from 'react-icons/fa';
 import Lottie from 'lottie-react';
 import animationData from '../assets/win.json';
@@ -13,14 +13,42 @@ import p7 from '../assets/7.png';
 import p8 from '../assets/8.png';
 import CourseDet from '../com/CourseDet';
 import Circle from './Circle';
+import { useNavigate } from 'react-router-dom';
+import { useKeycloak } from '@react-keycloak/web';
 import Lists from '../com/Lists';
 
 const Welcome = ({ onStartClick }) => {
+  const { keycloak, initialized } = useKeycloak();
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    if (initialized && keycloak.authenticated) {
+      // Access user information after authentication
+      console.log('User ID:', keycloak.idTokenParsed.sub);
+      console.log('User Email:', keycloak.idTokenParsed.email);
+
+      console.log("navigating");
+  }
+
+  },[initialized, keycloak])
+
+  const handleLogin = () => {
+    if (!keycloak.authenticated) {
+      console.log("user click and not authenticated",initialized);
+      console.log("user click and  not authenticated",keycloak);
+      console.log(keycloak.authenticated);
+      keycloak.login(); 
+    } else {
+      console.log("user clicked and authenticated");
+      // navigate("/home");
+      onStartClick();
+    }
+  };
   return (
     <div className='bg-[#020917]'>
       <div className='rounded-b-3xl rounded-t-3xl border-b-2 mb-10'>
         <div className="text-end pr-20 justify-center pt-[2rem] pb-[4rem]">
-          <button onClick={onStartClick} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transform transition duration-300 ease-in-out hover:scale-110">
+          <button onClick={handleLogin} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transform transition duration-300 ease-in-out hover:scale-110">
             Start now
           </button>
           <div className="absolute top-5 right-5 mt-4 mr-4">
